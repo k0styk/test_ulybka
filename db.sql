@@ -1,32 +1,43 @@
 -- Table: public.authors
-
 -- DROP TABLE public.authors;
 
-CREATE TABLE public.authors
+CREATE TABLE IF NOT EXISTS public.authors
 (
-    id integer NOT NULL DEFAULT nextval('authors_id_seq'::regclass),
-    name character varying(150) COLLATE pg_catalog."default" NOT NULL,
-    lastname character varying(150) COLLATE pg_catalog."default" NOT NULL,
-    surname character varying(150) COLLATE pg_catalog."default" NOT NULL,
+    id serial NOT NULL,
+    name varchar(150) NOT NULL,
+    lastname varchar(150) NOT NULL,
+    surname varchar(150) NOT NULL,
     CONSTRAINT authors_pkey PRIMARY KEY (id)
-)
-
-TABLESPACE pg_default;
+);
 
 ALTER TABLE public.authors
     OWNER to postgres;
 
--- Table: public.feedback_items
+-- Table: public.items
+-- DROP TABLE public.items;
 
+CREATE TABLE public.items
+(
+    id serial NOT NULL,
+    name varchar(150) NOT NULL,
+    avg_rating real,
+    CONSTRAINT items_pkey PRIMARY KEY (id)
+)
+
+ALTER TABLE public.items
+    OWNER to postgres;
+
+-- Table: public.feedback_items
 -- DROP TABLE public.feedback_items;
 
-CREATE TABLE public.feedback_items
+CREATE TABLE IF NOT EXISTS public.feedback_items
 (
     id integer NOT NULL DEFAULT nextval('feedback_items_id_seq'::regclass),
     item_id integer NOT NULL,
     author_id integer NOT NULL,
+    rating integer NOT NULL CHECK (rating >= 0 AND rating <= 10),
     created_date timestamp without time zone NOT NULL DEFAULT now(),
-    update_date timestamp without time zone NOT NULL,
+    update_date timestamp without time zone NOT NULL DEFAULT now(),
     CONSTRAINT feedback_items_pkey PRIMARY KEY (id),
     CONSTRAINT feedback_items_authors_fkey FOREIGN KEY (author_id)
         REFERENCES public.authors (id) MATCH SIMPLE
@@ -38,39 +49,39 @@ CREATE TABLE public.feedback_items
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
-)
-
-TABLESPACE pg_default;
+);
 
 ALTER TABLE public.feedback_items
     OWNER to postgres;
 
--- Table: public.items
+-- INSERT DATA
+INSERT INTO public.authors(id, name, lastname, surname) VALUES (1,'Paul', 'Rabic', 'Zamal');
+INSERT INTO public.authors(id, name, lastname, surname) VALUES (2,'Jane', 'Duen', 'Seqora');
+INSERT INTO public.authors(id, name, lastname, surname) VALUES (3,'John', 'Seana', 'Aeste');
 
--- DROP TABLE public.items;
+INSERT INTO public.items(id, name, avg_rating) VALUES ('1', 'TV', 0); 
+INSERT INTO public.items(id, name, avg_rating) VALUES ('1', 'Teapot', 0);
+INSERT INTO public.items(id, name, avg_rating) VALUES ('1', 'Microwawe oven', 0);
 
-CREATE TABLE public.items
-(
-    id integer NOT NULL DEFAULT nextval('items_id_seq'::regclass),
-    name character varying(150) COLLATE pg_catalog."default" NOT NULL,
-    avg_rating real,
-    CONSTRAINT items_pkey PRIMARY KEY (id)
-)
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,1,1);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,2,3);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,3,4);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,1,5);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,2,6);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,3,7);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,1,8);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,2,9);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,3,11);
 
-TABLESPACE pg_default;
+-- CREATE FUNCTION upd_stamp() RETURNS trigger AS $upd_stamp$
+--     BEGIN
+--         NEW.update_date := current_timestamp;
+--         RETURN NEW;
+--     END;
+-- $upd_stamp$ LANGUAGE plpgsql;
 
-ALTER TABLE public.items
-    OWNER to postgres;
-
-CREATE FUNCTION upd_stamp() RETURNS trigger AS $upd_stamp$
-    BEGIN
-        NEW.update_date := current_timestamp;
-        RETURN NEW;
-    END;
-$upd_stamp$ LANGUAGE plpgsql;
-
-CREATE TRIGGER upd_stamp AFTER UPDATE ON feedback_items
-    FOR EACH ROW EXECUTE PROCEDURE upd_stamp();
+-- CREATE TRIGGER upd_stamp AFTER UPDATE ON feedback_items
+--     FOR EACH ROW EXECUTE PROCEDURE upd_stamp();
 
 -- CREATE FUNCTION emp_stamp() RETURNS trigger AS $emp_stamp$
 --     BEGIN
