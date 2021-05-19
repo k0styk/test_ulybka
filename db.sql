@@ -22,7 +22,7 @@ CREATE TABLE public.items
     name varchar(150) NOT NULL,
     avg_rating real,
     CONSTRAINT items_pkey PRIMARY KEY (id)
-)
+);
 
 ALTER TABLE public.items
     OWNER to postgres;
@@ -32,7 +32,7 @@ ALTER TABLE public.items
 
 CREATE TABLE IF NOT EXISTS public.feedback_items
 (
-    id integer NOT NULL DEFAULT nextval('feedback_items_id_seq'::regclass),
+    id serial NOT NULL,
     item_id integer NOT NULL,
     author_id integer NOT NULL,
     rating integer NOT NULL CHECK (rating >= 0 AND rating <= 10),
@@ -54,14 +54,42 @@ CREATE TABLE IF NOT EXISTS public.feedback_items
 ALTER TABLE public.feedback_items
     OWNER to postgres;
 
+CREATE FUNCTION upd_stamp() RETURNS trigger AS $upd_stamp$
+    BEGIN
+        NEW.update_date := current_timestamp;
+        RETURN NEW;
+    END;
+$upd_stamp$ LANGUAGE plpgsql;
+
+CREATE TRIGGER upd_stamp BEFORE UPDATE ON feedback_items
+FOR EACH ROW EXECUTE PROCEDURE upd_stamp();
+
+CREATE FUNCTION avg_count() RETURNS trigger AS $avg_count$
+    DECLARE
+        avg_r              numeric(10,3);
+    BEGIN
+        avg_r = (select avg(rating) from public.feedback_items where item_id = NEW.item_id);
+        UPDATE public.items SET avg_rating = avg_r WHERE id = NEW.item_id;
+        RETURN NEW;
+    END;
+$avg_count$ LANGUAGE plpgsql;
+
+CREATE TRIGGER avg_count AFTER INSERT OR UPDATE ON feedback_items
+FOR EACH ROW EXECUTE PROCEDURE avg_count();
+
+CREATE VIEW api_feedback_items AS
+    SELECT rating, a.name, a.lastname, a.surname
+    FROM public.feedback_items f
+    JOIN public.authors a on f.author_id = a.id
+
 -- INSERT DATA
 INSERT INTO public.authors(id, name, lastname, surname) VALUES (1,'Paul', 'Rabic', 'Zamal');
 INSERT INTO public.authors(id, name, lastname, surname) VALUES (2,'Jane', 'Duen', 'Seqora');
 INSERT INTO public.authors(id, name, lastname, surname) VALUES (3,'John', 'Seana', 'Aeste');
 
-INSERT INTO public.items(id, name, avg_rating) VALUES ('1', 'TV', 0); 
-INSERT INTO public.items(id, name, avg_rating) VALUES ('1', 'Teapot', 0);
-INSERT INTO public.items(id, name, avg_rating) VALUES ('1', 'Microwawe oven', 0);
+INSERT INTO public.items(id, name, avg_rating) VALUES (1, 'TV', 0); 
+INSERT INTO public.items(id, name, avg_rating) VALUES (2, 'Teapot', 0);
+INSERT INTO public.items(id, name, avg_rating) VALUES (3, 'Microwawe oven', 0);
 
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,1,1);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,2,3);
@@ -72,38 +100,3 @@ INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,3,7);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,1,8);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,2,9);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,3,11);
-
--- CREATE FUNCTION upd_stamp() RETURNS trigger AS $upd_stamp$
---     BEGIN
---         NEW.update_date := current_timestamp;
---         RETURN NEW;
---     END;
--- $upd_stamp$ LANGUAGE plpgsql;
-
--- CREATE TRIGGER upd_stamp AFTER UPDATE ON feedback_items
---     FOR EACH ROW EXECUTE PROCEDURE upd_stamp();
-
--- CREATE FUNCTION emp_stamp() RETURNS trigger AS $emp_stamp$
---     BEGIN
---         -- Проверить, что указаны имя сотрудника и зарплата
---         IF NEW.empname IS NULL THEN
---             RAISE EXCEPTION 'empname cannot be null';
---         END IF;
---         IF NEW.salary IS NULL THEN
---             RAISE EXCEPTION '% cannot have null salary', NEW.empname;
---         END IF;
-
---         -- Кто будет работать, если за это надо будет платить?
---         IF NEW.salary < 0 THEN
---             RAISE EXCEPTION '% cannot have a negative salary', NEW.empname;
---         END IF;
-
---         -- Запомнить, кто и когда изменил запись
---         NEW.last_date := current_timestamp;
---         NEW.last_user := current_user;
---         RETURN NEW;
---     END;
--- $emp_stamp$ LANGUAGE plpgsql;
-
--- CREATE TRIGGER emp_stamp BEFORE INSERT OR UPDATE ON emp
---     FOR EACH ROW EXECUTE PROCEDURE emp_stamp();
