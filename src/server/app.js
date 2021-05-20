@@ -10,7 +10,5 @@ app.use(express.urlencoded({ extended: true }));
 // Bring in the routes
 // statics
 app.use('/', express.static(path.join(__dirname, '../../dist')));
-// routes
-app.use(require('./routes/download'));
 
 module.exports = app;

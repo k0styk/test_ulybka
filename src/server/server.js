@@ -6,14 +6,16 @@ items
 
 */
 /* eslint-disable */
+require('dotenv').config();
 
-const PORT =      process.env.PORT,
-      HOST =      process.env.HOST;
+const PORT = process.env['APP_PORT'],
+      HOST = process.env['APP_HOST'];
 
 (async () => {
   async function listenCallback() {
     try {
       // some functions after server start
+      // you can also use async/await      
     } catch (err) {
       console.log('Some error occured');
       console.log(err);
