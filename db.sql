@@ -1,5 +1,12 @@
 -- create DB
-CREATE DATABASE test;
+CREATE DATABASE test
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Russian_Russia.1251'
+    LC_CTYPE = 'Russian_Russia.1251'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
 
 -- Table: public.authors
 -- DROP TABLE public.authors;
@@ -81,26 +88,26 @@ CREATE TRIGGER avg_count AFTER INSERT OR UPDATE ON feedback_items
 FOR EACH ROW EXECUTE PROCEDURE avg_count();
 
 CREATE VIEW api_feedback_items AS
-    SELECT item_id, i.name as ItemName, a.name, a.lastname, a.surname, rating
+    SELECT author_id, item_id, i.name as item_name, a.name, a.lastname, a.surname, rating
     FROM public.feedback_items f
     JOIN public.authors a on f.author_id = a.id
-    JOIN public.items i on f.item_id = i.id
+    JOIN public.items i on f.item_id = i.id;
 
--- INSERT DATA
-INSERT INTO public.authors(id, name, lastname, surname) VALUES (1,'Paul', 'Rabic', 'Zamal');
-INSERT INTO public.authors(id, name, lastname, surname) VALUES (2,'Jane', 'Duen', 'Seqora');
-INSERT INTO public.authors(id, name, lastname, surname) VALUES (3,'John', 'Seana', 'Aeste');
+-- -- INSERT DATA
+-- INSERT INTO public.authors(name, lastname, surname) VALUES ('Paul', 'Rabic', 'Zamal');
+-- INSERT INTO public.authors(name, lastname, surname) VALUES ('Jane', 'Duen', 'Seqora');
+-- INSERT INTO public.authors(name, lastname, surname) VALUES ('John', 'Seana', 'Aeste');
 
-INSERT INTO public.items(id, name, avg_rating) VALUES (1, 'TV', 0); 
-INSERT INTO public.items(id, name, avg_rating) VALUES (2, 'Teapot', 0);
-INSERT INTO public.items(id, name, avg_rating) VALUES (3, 'Microwawe oven', 0);
+-- INSERT INTO public.items(name) VALUES ('TV'); 
+-- INSERT INTO public.items(name) VALUES ('Teapot');
+-- INSERT INTO public.items(name) VALUES ('Microwawe oven');
 
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,1,1);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,2,3);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,3,4);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,1,5);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,2,6);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,3,7);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,1,8);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,2,9);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,3,10);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,1,1);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,2,3);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (1,3,4);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,1,5);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,2,6);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,3,7);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,1,8);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,2,9);
+-- INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,3,10);

@@ -54,7 +54,6 @@ export default withStyles(useStyles)(({
   classes
 }) => {
   const [rating, setRating] = React.useState('');
-  
 
   return (
     <fieldset className={classes.fieldset}>
@@ -88,7 +87,14 @@ export default withStyles(useStyles)(({
           variant="contained"
           color="primary"
           endIcon={<AddCircleIcon />}
-          onClick={() => handleAdd(value)}
+          onClick={() => {
+            handleAdd({
+              item,
+              author,
+              rating
+            });
+            setRating('');
+          }}
           fullWidth
         >
           Add

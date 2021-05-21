@@ -50,7 +50,10 @@ export default withStyles(useStyles)(({
           variant="contained"
           color="primary"
           endIcon={<AddCircleIcon />}
-          onClick={() => handleAdd(value)}
+          onClick={() => {
+            handleAdd(value);
+            setValue('');
+          }}
           fullWidth
         >
           Add

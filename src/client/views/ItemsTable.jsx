@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+
 import TablePagination from '@material-ui/core/TablePagination';
 
 const useStyles = makeStyles({
@@ -71,8 +72,8 @@ const useStyles = makeStyles({
   }
 });
 
-const FeedbackTableView = ({
-  feedbackItems,
+const ItemsTableView = ({
+  items,
   legend
 }) => {
   const classes = useStyles();
@@ -94,7 +95,7 @@ const FeedbackTableView = ({
         <TableContainer className={classes.tableContainerFlex}>
           <TableContainer className={classes.tableRelativeContainer}>
             <TableContainer className={classes.tableAbsoluteContainer}>
-              {feedbackItems.length ? (
+              {items.length ? (
                 <Table
                   className={classes.table}
                   size="medium"
@@ -105,25 +106,19 @@ const FeedbackTableView = ({
                       <TableCell className={classes.numberHeader}>№</TableCell>
                       <TableCell className={classes.itemHeader}>Item name</TableCell>
                       <TableCell align="center">Rating</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Lastname</TableCell>
-                      <TableCell>Surname</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {feedbackItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    {items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row, index) => (
                         <TableRow key={index} >
                           <TableCell>{(page * rowsPerPage) + index + 1}</TableCell>
-                          <TableCell>{row['item_name']}</TableCell>
-                          <TableCell align="center">{row['rating']}</TableCell>
                           <TableCell>{row['name']}</TableCell>
-                          <TableCell>{row['lastname']}</TableCell>
-                          <TableCell>{row['surname']}</TableCell>
+                          <TableCell align="center">{row['avg_rating']}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
-                </Table>) : <h2>Feedback clear</h2>}
+                </Table>) : <h2>Items clear</h2>}
             </TableContainer>
           </TableContainer>
         </TableContainer>
@@ -132,7 +127,7 @@ const FeedbackTableView = ({
           className={classes.tablePaginationFlex}
           rowsPerPageOptions={[5, 10, 20]}
           component="div"
-          count={feedbackItems.length}
+          count={items.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
@@ -143,4 +138,4 @@ const FeedbackTableView = ({
   );
 };
 
-export default FeedbackTableView;
+export default ItemsTableView;

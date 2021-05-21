@@ -55,22 +55,42 @@ module.exports = server => {
       cb(rows);
     });
 
-    socket.on(events.constant.add_feedback, async ({item_id, author_id, rating}, cb) => {
-      const res = await db.query(queries.add_feedback, [item_id, author_id, rating]);
-      
-      console.log(res);
+    socket.on(events.constant.add_feedback, async ({item, author, rating}, cb) => {
+      try {
+        const res = await db.query(queries.add_feedback, [item, author, rating]);
+        const feedbackItems = await db.query(queries.get_feedback_view_all);
+        const items = await db.query(queries.get_items);
+
+
+        cb({feedbackItems: feedbackItems.rows, items: items.rows});
+      } catch(err) {
+        console.log(err);
+        cb({err});
+      }
     });
 
     socket.on(events.constant.add_author, async ({name,lastname,surname}, cb) => {
-      const res = await db.query(queries.add_author, [name,lastname,surname]);
-      
-      console.log(res);
+      try {
+        const res = await db.query(queries.add_author, [name,lastname,surname]);
+        const { rows } = await db.query(queries.get_authors);
+
+        cb({authors: rows});
+      } catch(err) {
+        console.log(err);
+        cb({err});
+      }
     });
 
     socket.on(events.constant.add_item, async ({name}, cb) => {
-      const res = await db.query(queries.add_item, [name]);
-      
-      console.log(res);
+      try {
+        const res = await db.query(queries.add_item, [name]);
+        const { rows } = await db.query(queries.get_items);
+
+        cb({items: rows});
+      } catch(err) {
+        console.log(err);
+        cb({err});
+      }
     });
     
   });
