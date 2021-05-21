@@ -23,3 +23,5 @@ And run following
 ```sh
 npm run deploy
 ```
+
+# Spent time ~14 hours, without configurating and etc.
