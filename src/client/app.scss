@@ -21,3 +21,36 @@ body, html {
   height: 100%;
   width: 100%;
 }
+
+.adding-div {
+  display: flex;
+  justify-content: center;
+  margin: 4px;
+
+  .left-block-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 4px;
+
+    .add-values-div {
+      display: flex;
+    }
+
+    .filter-div {
+      display: flex;
+    }
+  }
+
+  .feedback-add-div {
+    display: flex;
+    margin: 4px;
+  }
+}
+
+.clear-all-div {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+}

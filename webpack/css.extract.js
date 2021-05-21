@@ -20,9 +20,6 @@ module.exports = function() {
           use: [
             {
               loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: devMode,
-              },
             },
             {
               loader: 'css-loader',
@@ -33,18 +30,20 @@ module.exports = function() {
             {
               loader: 'postcss-loader',
               options: {
-                plugins: [
-                  autoprefixer(),
-                  cssnano({
-                    preset: [
-                      'default', {
-                        discardComments: {
-                          removeAll: true,
+                postcssOptions: {
+                  plugins: [
+                    autoprefixer(),
+                    cssnano({
+                      preset: [
+                        'default', {
+                          discardComments: {
+                            removeAll: true,
+                          }
                         }
-                      }
-                    ]
-                  })
-                ]
+                      ]
+                    })
+                  ]
+                }
               }
             },
             'sass-loader',

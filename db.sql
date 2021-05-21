@@ -1,3 +1,6 @@
+-- create DB
+CREATE DATABASE test;
+
 -- Table: public.authors
 -- DROP TABLE public.authors;
 
@@ -20,7 +23,7 @@ CREATE TABLE public.items
 (
     id serial NOT NULL,
     name varchar(150) NOT NULL,
-    avg_rating real,
+    avg_rating real DEFAULT 0,
     CONSTRAINT items_pkey PRIMARY KEY (id)
 );
 
@@ -78,9 +81,10 @@ CREATE TRIGGER avg_count AFTER INSERT OR UPDATE ON feedback_items
 FOR EACH ROW EXECUTE PROCEDURE avg_count();
 
 CREATE VIEW api_feedback_items AS
-    SELECT rating, a.name, a.lastname, a.surname
+    SELECT item_id, i.name as ItemName, a.name, a.lastname, a.surname, rating
     FROM public.feedback_items f
     JOIN public.authors a on f.author_id = a.id
+    JOIN public.items i on f.item_id = i.id
 
 -- INSERT DATA
 INSERT INTO public.authors(id, name, lastname, surname) VALUES (1,'Paul', 'Rabic', 'Zamal');
@@ -99,4 +103,4 @@ INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,2,6);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (2,3,7);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,1,8);
 INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,2,9);
-INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,3,11);
+INSERT INTO public.feedback_items(item_id, author_id, rating) VALUES (3,3,10);

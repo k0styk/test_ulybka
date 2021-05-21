@@ -1,5 +1,25 @@
-need build-essentials
+## Preparation
 
+Need prepare database first, execute [db.sql](db.sql) file for ready database
 
-fix pm2 ignore watch 
-https://raw.githubusercontent.com/Unitech/pm2/f6847bae3b7711ba573e6e210e378c4fcd7ad05f/lib/Watcher.js
+## Installation
+
+Create `.env` file and add this
+
+```sh
+APP_HOST=host
+APP_PORT=port
+PGHOST=postgres_host
+PGUSER=postgres_user
+PGDATABASE=postgres_db
+PGPASSWORD=postgres_passwrod
+PGPORT=5432
+```
+
+## Deploying
+
+And run following
+
+```sh
+npm run deploy
+```

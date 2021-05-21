@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "node ./src/server/server.js",
-    "deploy": "npm install&&npm run build:production&&npm prune --production&&npm start",
+    "deploy": "npm install&&npm run build:prod&&npm prune --production&&npm start",
     "build": "rimraf ./dist/ && webpack --mode development --progress --profile",
     "build:prod": "rimraf ./dist/ && webpack --mode production --progress --profile",
     "watch": "rimraf ./dist/ &&webpack --mode development --watch"
