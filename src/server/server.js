@@ -1,10 +1,3 @@
-/*
-
-add rating for item
-ratings for items from view
-items
-
-*/
 /* eslint-disable */
 require('dotenv').config();
 
@@ -26,6 +19,5 @@ const PORT = process.env['APP_PORT'],
   }
 
   const server = require('./app').listen(PORT,HOST,listenCallback);
-  const io = require('./socket')(server);
 })();
 /* eslint-enable */

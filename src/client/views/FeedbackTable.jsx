@@ -72,7 +72,7 @@ const useStyles = makeStyles({
 });
 
 const FeedbackTableView = ({
-  feedbackItems,
+  feedbacks,
   legend
 }) => {
   const classes = useStyles();
@@ -94,7 +94,7 @@ const FeedbackTableView = ({
         <TableContainer className={classes.tableContainerFlex}>
           <TableContainer className={classes.tableRelativeContainer}>
             <TableContainer className={classes.tableAbsoluteContainer}>
-              {feedbackItems.length ? (
+              {feedbacks.length ? (
                 <Table
                   className={classes.table}
                   size="medium"
@@ -111,7 +111,7 @@ const FeedbackTableView = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {feedbackItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    {feedbacks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row, index) => (
                         <TableRow key={index} >
                           <TableCell>{(page * rowsPerPage) + index + 1}</TableCell>
@@ -132,7 +132,7 @@ const FeedbackTableView = ({
           className={classes.tablePaginationFlex}
           rowsPerPageOptions={[5, 10, 20]}
           component="div"
-          count={feedbackItems.length}
+          count={feedbacks.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

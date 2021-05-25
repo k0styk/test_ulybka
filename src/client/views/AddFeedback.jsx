@@ -49,7 +49,6 @@ export default withStyles(useStyles)(({
   label,
   handleChangeAuthor,
   handleChangeItem,
-  labelInput,
   handleAdd,
   classes
 }) => {

@@ -16,6 +16,8 @@ PGPASSWORD=postgres_passwrod
 PGPORT=5432
 ```
 
+if want add `NODE_ENV=dev` for developer catching errors
+
 ## Deploying
 
 And run following

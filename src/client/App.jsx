@@ -4,14 +4,11 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 
-import { clientSocket } from './clientSocket';
-import { constant } from './Events';
+import { routes } from './constants';
 import AddView from './views/Add';
 import AddFeedBackView from './views/AddFeedback';
-import FilterView from './views/Filter';
 import FeedbackView from './views/FeedbackTable';
 import ItemsView from './views/ItemsTable';
-
 
 const useStyles = theme => ({
   button: {
@@ -24,11 +21,22 @@ const defaultState = {
     author: '',
     item: ''
   },
-  filter: {
-    author: '',
-    item: ''
-  }
 };
+
+const post = (link, options) => {
+  return fetch(link, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(options)
+  });
+};
+
+const get = link => {
+  return fetch(link);
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -38,18 +46,17 @@ class App extends React.Component {
       ...defaultState,
       items: [],
       authors: [],
-      feedbackItems: [],
+      feedbacks: [],
     }
   }
 
   componentDidMount() {
-    this.socket = clientSocket();
-
-    this.socket.emit(constant.get_all, data => {
-      this.setState({
-        ...data
-      });
-    });
+    get(routes.all)
+      .then(response => response.json())
+      .then(dt => {
+        this.setState({...dt});
+      })
+      .catch(err => console.error(err));
   }
 
   handleAddAuthor(value) {
@@ -60,32 +67,29 @@ class App extends React.Component {
         lastname: split[0],
         surname: split[2]
       }
-  
-      this.socket.emit(constant.add_author, author, ({authors, err}) => {
-        if(err) {
-          console.error(err);
-        } else {
+      post(routes.addAuthor, author)
+        .then(response => response.json())
+        .then(({authors}) => {
           this.setState({
             authors: [...authors],
           });
-        }
-      });
+        })
+        .catch(err => console.error(err));
     } else {
-      alert('U need write FIO(lastname name surname)');
+      alert('You need write FIO(lastname name surname)');
     }
   }
 
   handleAddItem(value) {
     if(value) {  
-      this.socket.emit(constant.add_item, {name: value}, ({items, err}) => {
-        if(err) {
-          console.error(err);
-        } else {
+      post(routes.addItem, {name: value})
+        .then(response => response.json())
+        .then(({items}) => {
           this.setState({
             items: [...items],
           });
-        }
-      });
+        })
+        .catch(err => console.error(err));
     }
   }
 
@@ -96,17 +100,15 @@ class App extends React.Component {
       rating
     } = values;
     if(item && author && rating) {  
-      this.socket.emit(constant.add_feedback, {item, author, rating}, ({feedbackItems, items, err}) => {
-        if(err) {
-          console.error(err);
-        } else {
-          console.log(feedbackItems, items);
+      post(routes.addFeedback, {item, author, rating})
+        .then(response => response.json())
+        .then(({feedbacks, items}) => {
           this.setState({
-            feedbackItems: [...feedbackItems],
-            items: [...items],
+            feedbacks: [...feedbacks],
+            items: [...items]
           });
-        }
-      });
+        })
+        .catch(err => console.error(err));
     }
   }
 
@@ -128,31 +130,12 @@ class App extends React.Component {
     });
   }
 
-  handleChangeFilterAuthor(event) {
-    this.setState({
-      filter: {
-        ...this.state.filter,
-        author: event.target.value
-      }
-    });
-  }
-
-  handleChangeFilterItem(event) {
-    this.setState({
-      filter: {
-        ...this.state.filter,
-        item: event.target.value
-      }
-    });
-  }
-
   render() {
     const {
       items,
       authors,
-      feedbackItems,
+      feedbacks,
       selected,
-      filter
     } = this.state;
     const { classes } = this.props;
 
@@ -175,24 +158,7 @@ class App extends React.Component {
               />
             </div>
           </div>
-          <div className="filter-div">
-            <div className="items-filter-div">
-              {/* <FilterView
-                label="Filter by items"
-                item={filter.item}
-                items={items}
-                handleChangeItem={this.handleChangeFilterItem.bind(this)}
-              /> */}
-            </div>
-            <div className="authors-filter-div">
-              {/* <FilterView
-                label="Filter by authors"
-                item={filter.author}
-                items={authors}
-                handleChangeItem={this.handleChangeFilterAuthor.bind(this)}
-              /> */}
-            </div>
-          </div>
+          <div className="filter-div"></div>
         </div>
         <div className="feedback-add-div">
           <AddFeedBackView
@@ -222,7 +188,7 @@ class App extends React.Component {
       </div>
       <div className="pagination-div">
         <FeedbackView
-          feedbackItems={feedbackItems}
+          feedbacks={feedbacks}
           legend="Feedbacks"
         />
         <ItemsView
